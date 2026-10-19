@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 39 - Đèn kéo quân</title>
+
+  <style>
+    :root {
+      --gold: #ffd778;
+      --dark: #101426;
+      --panel-width: 190px;
+      --panel-height: 265px;
+      --radius: 164px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      color: #fff8e8;
+      background:
+        radial-gradient(ellipse at 50% 40%,
+          #39415c 0%, #1b2035 42%, #090d19 100%);
+    }
+
+    header {
+      text-align: center;
+      padding: 28px 16px 0;
+    }
+
+    .tag {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 4px;
+    }
+
+    h1 {
+      margin: 12px 0;
+      color: var(--gold);
+      font-size: clamp(27px, 5vw, 44px);
+      text-shadow: 0 0 22px #ffc54d55;
+    }
+
+    header p {
+      color: #d4d9e8;
+      line-height: 1.7;
+    }
+
+    .student {
+      display: inline-block;
+      padding: 10px 18px;
+      margin-top: 8px;
+      border: 1px solid #ffd77866;
+      border-radius: 30px;
+      background: #ffffff0a;
+      font-size: 14px;
+    }
+
+    .stage {
+      min-height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1000px;
+      overflow: hidden;
+      padding: 20px 0;
+    }
+
+    .lantern {
+      position: relative;
+      width: var(--panel-width);
+      height: var(--panel-height);
+      transform-style: preserve-3d;
+      animation: spin 18s linear infinite;
+    }
+
+    .lantern.paused {
+      animation-play-state: paused;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotateY(0deg);
+      }
+      to {
+        transform: rotateY(360deg);
+      }
+    }
+
+    .face {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--panel-width);
+      height: var(--panel-height);
+      overflow: hidden;
+      border: 2px solid #ffda7c;
+      border-radius: 9px;
+      background: #252b40;
+      box-shadow:
+        inset 0 0 20px #ffd77822,
+        0 0 16px #ffc64a55;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      cursor: pointer;
+      transition: box-shadow .25s, border-color .25s;
+    }
+
+    .face:hover {
+      border-color: #fff4b8;
+      box-shadow: 0 0 32px #ffce62bb;
+    }
+
+    .face img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .face-label {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 12px 6px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      background: linear-gradient(transparent, #080b16eF);
+      color: #fff1c4;
+    }
+
+    .cap {
+      position: absolute;
+      left: 50%;
+      width: 105px;
+      height: 28px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #80551c, #ffe6a0, #9e691e);
+      border-radius: 50%;
+      box-shadow: 0 0 22px #ffd77899;
+    }
+
+    .cap.top {
+      top: -37px;
+    }
+
+    .cap.bottom {
+      bottom: -37px;
+    }
+
+    .axis {
+      position: absolute;
+      z-index: -1;
+      left: 50%;
+      top: 50%;
+      width: 5px;
+      height: 350px;
+      transform: translate(-50%, -50%);
+      border-radius: 10px;
+      background: linear-gradient(#fff1a3, #a76c24);
+      box-shadow: 0 0 15px #ffce5e;
+    }
+
+    .instructions {
+      text-align: center;
+      padding: 8px 18px 35px;
+    }
+
+    .instructions p {
+      color: #e0e3ed;
+      line-height: 1.8;
+    }
+
+    .status {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 16px;
+      color: var(--gold);
+      background: #ffffff0b;
+      border: 1px solid #ffd77855;
+      border-radius: 25px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6cf0a3;
+      box-shadow: 0 0 10px #6cf0a3;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 18px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #a8aec1;
+      border-top: 1px solid #ffffff12;
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --panel-width: 145px;
+        --panel-height: 215px;
+        --radius: 125px;
+      }
+
+      .stage {
+        min-height: 370px;
+      }
+
+      .axis {
+        height: 280px;
+      }
+
+      .tag {
+        letter-spacing: 2px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lantern {
+        animation-duration: 60s;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="tag">BÀI TẬP 39 · JAVASCRIPT</div>
+    <h1>🏮 ĐÈN KÉO QUÂN 🏮</h1>
+    <p>
+      Sáu khoảnh khắc · Một vòng quay kỷ niệm<br>
+      Di chuyển chuột lên ảnh để dừng đèn
+    </p>
+
+    <div class="student">
+      MSSV: <strong>231A010572</strong>
+      &nbsp;|&nbsp;
+      Họ tên: Nguyễn Quốc Huy
+    </div>
+  </header>
+
+  <main>
+    <section class="stage" aria-label="Đèn kéo quân 3D">
+      <div class="axis"></div>
+
+      <div class="lantern" id="lantern">
+        <div class="cap top"></div>
+        <div class="cap bottom"></div>
+
+        <div class="face"
+             style="transform: rotateY(0deg) translateZ(var(--radius))">
+          <img src="images/anh1.jpg" alt="Ảnh kỷ niệm 1">
+          <div class="face-label">Kỷ niệm 01</div>
+        </div>
+
+        <div class="face"
+             style="transform: rotateY(60deg) translateZ(var(--radius))">
+          <img src="images/anh2.jpg" alt="Ảnh kỷ niệm 2">
+          <div class="face-label">Kỷ niệm 02</div>
+        </div>
+
+        <div class="face"
+             style="transform: rotateY(120deg) translateZ(var(--radius))">
+          <img src="images/anh3.jpg" alt="Ảnh kỷ niệm 3">
+          <div class="face-label">Kỷ niệm 03</div>
+        </div>
+
+        <div class="face"
+             style="transform: rotateY(180deg) translateZ(var(--radius))">
+          <img src="images/anh4.jpg" alt="Ảnh kỷ niệm 4">
+          <div class="face-label">Kỷ niệm 04</div>
+        </div>
+
+        <div class="face"
+             style="transform: rotateY(240deg) translateZ(var(--radius))">
+          <img src="images/anh5.jpg" alt="Ảnh kỷ niệm 5">
+          <div class="face-label">Kỷ niệm 05</div>
+        </div>
+
+        <div class="face"
+             style="transform: rotateY(300deg) translateZ(var(--radius))">
+          <img src="images/anh6.jpg" alt="Ảnh kỷ niệm 6">
+          <div class="face-label">Kỷ niệm 06</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="instructions">
+      <div class="status" aria-live="polite">
+        <span class="dot" id="dot"></span>
+        <span id="statusText">Đèn đang quay</span>
+      </div>
+
+      <p>
+        🖱️ Rê chuột vào một mặt ảnh để dừng quay.<br>
+        ✨ Rê chuột ra ngoài để đèn tiếp tục quay.
+      </p>
+
+      <a class="back" href="index.html">
+        ← Quay về trang chủ
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    BÀI TẬP 39 · THIẾT KẾ WEB VỚI JAVASCRIPT
+  </footer>
+
+  <script>
+    const lantern = document.getElementById("lantern");
+    const statusText = document.getElementById("statusText");
+    const dot = document.getElementById("dot");
+    const faces = document.querySelectorAll(".face");
+
+    function pauseLantern() {
+      lantern.classList.add("paused");
+      statusText.textContent = "Đèn đã dừng";
+      dot.style.background = "#ffcb62";
+      dot.style.boxShadow = "0 0 10px #ffcb62";
+    }
+
+    function resumeLantern() {
+      lantern.classList.remove("paused");
+      statusText.textContent = "Đèn đang quay";
+      dot.style.background = "#6cf0a3";
+      dot.style.boxShadow = "0 0 10px #6cf0a3";
+    }
+
+    faces.forEach(function(face) {
+      face.addEventListener("mouseenter", pauseLantern);
+      face.addEventListener("mouseleave", resumeLantern);
+
+      // Hỗ trợ thao tác chạm trên điện thoại.
+      face.addEventListener("touchstart", pauseLantern, {
+        passive: true
+      });
+    });
+
+    // Khi người dùng chạm ra ngoài đèn trên màn hình cảm ứng.
+    document.addEventListener("touchstart", function(event) {
+      if (!event.target.closest(".face")) {
+        resumeLantern();
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
